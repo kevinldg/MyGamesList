@@ -1,3 +1,7 @@
 export default function IndexPage() {
-    return <p>Hello World!</p>;
+    return (
+        <div className="p-4">
+            <p>Welcome to MyGamesList, please click on "My Profile" to continue!</p>
+        </div>
+    );
 }
