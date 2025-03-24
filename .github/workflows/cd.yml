@@ -37,4 +37,4 @@ jobs:
         run: |
           docker stop my-games-list || true
           docker rm my-games-list || true
-          docker run -d --name my-games-list --network ${{ secrets.DOCKER_NETWORK_NAME }} -e MONGODB_URI=${{ secrets.MONGODB_URI }} ${{ secrets.DOCKERHUB_USERNAME }}/mygameslist:latest
+          docker run -d --name my-games-list --network ${{ secrets.DOCKER_NETWORK_NAME }} -e MONGODB_URI=${{ secrets.MONGODB_URI }} ${{ secrets.DOCKERHUB_USERNAME }}/mygameslist:${{ github.sha }}
