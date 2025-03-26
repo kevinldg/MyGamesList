@@ -1,74 +1,128 @@
 package com.github.kevinldg.mygameslist.backend.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.github.kevinldg.mygameslist.backend.exception.UserAlreadyExistsException;
+import com.github.kevinldg.mygameslist.backend.user.User;
+import com.github.kevinldg.mygameslist.backend.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.security.Key;
-import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class AuthUnitTest {
+
+    @InjectMocks
+    private AuthService authService;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private JwtService jwtService;
-    private final String jwtSecret = "12345678901234567890123456789012";
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+
+    private final String testUsername = "testuser";
+    private final String testPassword = "password123";
+    private final String encodedPassword = "encodedPassword";
+    private final String testToken = "jwtToken";
 
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "secret", jwtSecret);
+        MockitoAnnotations.openMocks(this);
+        when(jwtService.generateToken(anyString())).thenReturn(testToken);
+        when(passwordEncoder.encode(anyString())).thenReturn(encodedPassword);
     }
 
     @Test
-    void testGenerateToken() {
-        String username = "testuser";
+    void registerShouldCreateNewUserAndReturnToken() {
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(User.builder()
+                .username(testUsername)
+                .password(encodedPassword)
+                .build());
 
-        String token = jwtService.generateToken(username);
+        String result = authService.register(testUsername, testPassword);
 
-        assertThat(token)
-                .isNotNull()
-                .isNotEmpty();
+        assertEquals(testToken, result);
+        verify(userRepository).findByUsername(testUsername);
+        verify(passwordEncoder).encode(testPassword);
+        verify(userRepository).save(any(User.class));
+        verify(jwtService).generateToken(testUsername);
     }
 
     @Test
-    void testGeneratedTokenContainsUsername() {
-        String username = "testuser";
+    void registerShouldThrowExceptionWhenUserAlreadyExists() {
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(
+                User.builder()
+                        .username(testUsername)
+                        .password(encodedPassword)
+                        .build()));
 
-        String token = jwtService.generateToken(username);
+        assertThrows(UserAlreadyExistsException.class, () ->
+                authService.register(testUsername, testPassword));
 
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        assertThat(claims.getSubject()).isEqualTo(username);
+        verify(userRepository).findByUsername(testUsername);
+        verify(userRepository, never()).save(any(User.class));
+        verify(jwtService, never()).generateToken(anyString());
     }
 
     @Test
-    void testGeneratedTokenHasExpiration() {
-        String username = "testuser";
+    void loginShouldReturnTokenForValidCredentials() {
+        User mockUser = User.builder()
+                .username(testUsername)
+                .password(encodedPassword)
+                .build();
 
-        String token = jwtService.generateToken(username);
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches(testPassword, encodedPassword)).thenReturn(true);
 
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        String result = authService.login(testUsername, testPassword);
 
-        Date expirationDate = claims.getExpiration();
-        assertThat(expirationDate)
-                .isNotNull()
-                .isAfter(new Date());
+        assertEquals(testToken, result);
+        verify(userRepository).findByUsername(testUsername);
+        verify(passwordEncoder).matches(testPassword, encodedPassword);
+        verify(jwtService).generateToken(testUsername);
+    }
 
-        long expectedExpiration = System.currentTimeMillis() + 1000 * 60 * 60 * 24 - 5000;
-        assertThat(expirationDate.getTime()).isCloseTo(expectedExpiration, within(5000L));
+    @Test
+    void loginShouldThrowExceptionWhenUserNotFound() {
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () ->
+                authService.login(testUsername, testPassword));
+
+        verify(userRepository).findByUsername(testUsername);
+        verify(passwordEncoder, never()).matches(anyString(), anyString());
+        verify(jwtService, never()).generateToken(anyString());
+    }
+
+    @Test
+    void loginShouldThrowExceptionWhenPasswordInvalid() {
+        User mockUser = User.builder()
+                .username(testUsername)
+                .password(encodedPassword)
+                .build();
+
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches(testPassword, encodedPassword)).thenReturn(false);
+
+        assertThrows(BadCredentialsException.class, () ->
+                authService.login(testUsername, testPassword));
+
+        verify(userRepository).findByUsername(testUsername);
+        verify(passwordEncoder).matches(testPassword, encodedPassword);
+        verify(jwtService, never()).generateToken(anyString());
     }
 }
