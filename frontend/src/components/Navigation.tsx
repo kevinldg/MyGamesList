@@ -37,7 +37,7 @@ export default function Navigation() {
                 navigationItems
                     .filter(shouldShowItem)
                     .map(item => item.isEnabled && (
-                        <Link to={item.url} className="w-full p-2 text-center font-bold hover:bg-mgl-dark-500">{item.name}</Link>
+                        <Link key={item.url} to={item.url} className="w-full p-2 text-center font-bold hover:bg-mgl-dark-500">{item.name}</Link>
                     ))
             }
         </nav>
