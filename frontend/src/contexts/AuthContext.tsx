@@ -1,11 +1,6 @@
 import {createContext, useState, useContext, ReactNode, useEffect} from 'react';
 import axios from "axios";
-
-interface User {
-    id: string;
-    username: string;
-    password: string;
-}
+import { User } from '../types/User';
 
 interface AuthContextType {
     token: string | null;
@@ -20,26 +15,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            if (token) {
-                try {
-                    axios.get("/api/auth/me", {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                        .then(response => setUser(response.data))
-                        .catch(error => console.error("Error getting user", error))
-                } catch {
+        if (token) {
+            axios.get("/api/auth/me", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then(response => setUser(response.data))
+                .catch(error => {
+                    console.error("Error getting user", error);
                     setToken(null);
                     setUser(null);
-                }
-            } else {
-                setUser(null);
-            }
-        };
-
-        fetchUser();
+                });
+        } else {
+            setUser(null);
+        }
     }, [token]);
 
     const handleSetToken = (token: string | null) => {

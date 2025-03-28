@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class AuthService {
         User user = User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
+                .createdAt(Instant.now())
                 .build();
         userRepository.save(user);
 
@@ -45,11 +47,12 @@ public class AuthService {
 
     public UserInfoDTO getUserInfo(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Benutzer nicht gefunden: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
         return new UserInfoDTO(
                 user.id(),
-                user.username()
+                user.username(),
+                user.createdAt()
         );
     }
 }
