@@ -6,6 +6,7 @@ import axios from "axios";
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
     const { token, setToken } = useAuth();
     const navigate = useNavigate();
 
@@ -14,6 +15,12 @@ export default function LoginPage() {
 
         axios.post("/api/auth/login", {username: username, password: password})
             .then(response => {
+
+                if (response.data.message === "Invalid credentials") {
+                    setError(response.data.message);
+                    return;
+                }
+
                 setToken(response.data.token);
                 navigate("/");
             })
@@ -25,11 +32,23 @@ export default function LoginPage() {
             <div className="p-16 bg-mgl-dark-700 flex flex-col gap-4">
                 <p className="text-center">Login</p>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <input type="text" name="username" placeholder="Username" value={username} onChange={event => setUsername(event.target.value)} className="bg-mgl-dark-900 px-2 py-1" />
-                    <input type="password" name="password" placeholder="Password" value={password} onChange={event => setPassword(event.target.value)} className="bg-mgl-dark-900 px-2 py-1" />
+                    <input type="text" name="username" placeholder="Username" value={username} onChange={event => {
+                        setUsername(event.target.value);
+                        setError(null);
+                    }} className="bg-mgl-dark-900 px-2 py-1" />
+                    <input type="password" name="password" placeholder="Password" value={password} onChange={event => {
+                        setPassword(event.target.value);
+                        setError(null);
+                    }} className="bg-mgl-dark-900 px-2 py-1" />
                     <button className="bg-blue-500 py-1 rounded">Login</button>
                 </form>
                 <Link to="/register">Want to register?</Link>
+                {error && (
+                    <div className="border-2 border-red-950 bg-red-900 text-red-400 p-4">
+                        <p className="font-bold">Error</p>
+                        <p>{error}</p>
+                    </div>
+                )}
             </div>
         </div>
     );
