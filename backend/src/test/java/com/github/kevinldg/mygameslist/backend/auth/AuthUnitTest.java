@@ -2,6 +2,7 @@ package com.github.kevinldg.mygameslist.backend.auth;
 
 import com.github.kevinldg.mygameslist.backend.exception.UserAlreadyExistsException;
 import com.github.kevinldg.mygameslist.backend.user.User;
+import com.github.kevinldg.mygameslist.backend.user.UserInfoDTO;
 import com.github.kevinldg.mygameslist.backend.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.Instant;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -124,5 +127,36 @@ class AuthUnitTest {
         verify(userRepository).findByUsername(testUsername);
         verify(passwordEncoder).matches(testPassword, encodedPassword);
         verify(jwtService, never()).generateToken(anyString());
+    }
+
+    @Test
+    void getUserInfoShouldReturnUserInfoForValidUsername() {
+        String testId = "testId";
+        Instant testCreatedAt = Instant.now();
+        User mockUser = User.builder()
+                .id(testId)
+                .username(testUsername)
+                .password(encodedPassword)
+                .createdAt(testCreatedAt)
+                .build();
+
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(mockUser));
+
+        UserInfoDTO result = authService.getUserInfo(testUsername);
+
+        assertEquals(testId, result.id());
+        assertEquals(testUsername, result.username());
+        assertEquals(testCreatedAt, result.createdAt());
+        verify(userRepository).findByUsername(testUsername);
+    }
+
+    @Test
+    void getUserInfoShouldThrowExceptionWhenUserNotFound() {
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class, () ->
+                authService.getUserInfo(testUsername));
+
+        verify(userRepository).findByUsername(testUsername);
     }
 }

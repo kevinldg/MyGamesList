@@ -1,6 +1,8 @@
 package com.github.kevinldg.mygameslist.backend.auth;
 
+import com.github.kevinldg.mygameslist.backend.user.UserInfoDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,9 +23,8 @@ public class AuthController {
         return new Token(token);
     }
 
-    // Testing purposes
     @GetMapping("/me")
-    public String me() {
-        return "Authentication successful!";
+    public UserInfoDTO me(Authentication authentication) {
+        return authService.getUserInfo(authentication.getName());
     }
 }

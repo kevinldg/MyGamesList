@@ -2,12 +2,15 @@ package com.github.kevinldg.mygameslist.backend.auth;
 
 import com.github.kevinldg.mygameslist.backend.exception.UserAlreadyExistsException;
 import com.github.kevinldg.mygameslist.backend.user.User;
+import com.github.kevinldg.mygameslist.backend.user.UserInfoDTO;
 import com.github.kevinldg.mygameslist.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class AuthService {
         User user = User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
+                .createdAt(Instant.now())
                 .build();
         userRepository.save(user);
 
@@ -39,5 +43,16 @@ public class AuthService {
         }
 
         return jwtService.generateToken(username);
+    }
+
+    public UserInfoDTO getUserInfo(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        return new UserInfoDTO(
+                user.id(),
+                user.username(),
+                user.createdAt()
+        );
     }
 }

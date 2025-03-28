@@ -1,9 +1,36 @@
-import {Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
+import Layout from "./layout.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
+import IndexPage from "./pages/IndexPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
+import {AuthProvider, useAuth} from "./contexts/AuthContext.tsx";
+import {JSX} from "react";
+
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+    const { token } = useAuth();
+    return token ? children : <Navigate to="/login" />;
+};
 
 export default function App() {
     return (
-        <Routes>
-            <Route path="/" element={<p>Hello World</p>}/>
-        </Routes>
+        <AuthProvider>
+            <Routes>
+                <Route path="/" element={<Layout/>}>
+                    <Route index element={
+                        <PrivateRoute>
+                            <IndexPage/>
+                        </PrivateRoute>
+                    }/>
+                    <Route path="/login" element={<LoginPage/>}/>
+                    <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/profile" element={
+                            <PrivateRoute>
+                                <ProfilePage/>
+                            </PrivateRoute>
+                        }/>
+                </Route>
+            </Routes>
+        </AuthProvider>
     );
 }
