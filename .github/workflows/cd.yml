@@ -35,6 +35,6 @@ jobs:
     steps:
       - name: Restart application
         run: |
-          docker stop my-games-list || true
-          docker rm my-games-list || true
+          docker container inspect my-games-list >/dev/null 2>&1 && docker stop my-games-list || echo "Container nicht vorhanden"
+          docker container inspect my-games-list >/dev/null 2>&1 && docker rm my-games-list || echo "Container nicht vorhanden"
           docker run -d --name my-games-list --network ${{ secrets.DOCKER_NETWORK_NAME }} -e MONGODB_URI=${{ secrets.MONGODB_URI }} -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e IGDB_CLIENT_ID=${{ secrets.IGDB_CLIENT_ID }} -e IGDB_BEARER_TOKEN=${{ secrets.IGDB_BEARER_TOKEN }} ${{ secrets.DOCKERHUB_USERNAME }}/mygameslist:${{ github.sha }}
