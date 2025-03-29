@@ -130,4 +130,60 @@ class IgdbUnitTest {
                 igdbService.searchGameByName("GTA V")
         );
     }
+
+    @Test
+    void searchGameByName_shouldReturnNull_whenNoGameWithRequiredFieldsFound() {
+        String gameResponse = """
+        [{
+            "id": 1020,
+            "artworks": [2631],
+            "name": "Grand Theft Auto V"
+        }]
+        """;
+        when(responseSpec.body(String.class)).thenReturn(gameResponse);
+
+        IgdbGame result = igdbService.searchGameByName("GTA V");
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void searchArtworkById_shouldReturnNull_whenNoArtworkFound() {
+        String artworkResponse = "[]";
+        when(responseSpec.body(String.class)).thenReturn(artworkResponse);
+
+        IgdbArtwork result = igdbService.searchArtworkById("1020");
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void searchGameAndArtwork_shouldReturnNull_whenNoGameFound() {
+        when(responseSpec.body(String.class)).thenReturn("[]");
+
+        IgdbGameAndArtwork result = igdbService.searchGameAndArtworkByName("NonExistentGame");
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void searchGameAndArtwork_shouldReturnNull_whenNoArtworkFound() {
+        String gameResponse = """
+        [{
+            "id": 1020,
+            "artworks": [2631],
+            "name": "Grand Theft Auto V",
+            "summary": "Game summary"
+        }]
+        """;
+        String artworkResponse = "[]";
+
+        when(responseSpec.body(String.class))
+                .thenReturn(gameResponse)
+                .thenReturn(artworkResponse);
+
+        IgdbGameAndArtwork result = igdbService.searchGameAndArtworkByName("GTA V");
+
+        assertThat(result).isNull();
+    }
 }
