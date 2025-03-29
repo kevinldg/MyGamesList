@@ -37,4 +37,4 @@ jobs:
         run: |
           docker stop my-games-list || true
           docker rm my-games-list || true
-          docker run -d --name my-games-list --network ${{ secrets.DOCKER_NETWORK_NAME }} -e MONGODB_URI=${{ secrets.MONGODB_URI }} -e JWT_SECRET=${{ secrets.JWT_SECRET }} ${{ secrets.DOCKERHUB_USERNAME }}/mygameslist:${{ github.sha }}
+          docker run -d --name my-games-list --network ${{ secrets.DOCKER_NETWORK_NAME }} -e MONGODB_URI=${{ secrets.MONGODB_URI }} -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e IGDB_CLIENT_ID=${{ secrets.IGDB_CLIENT_ID }} -e IGDB_BEARER_TOKEN=${{ secrets.IGDB_BEARER_TOKEN }} ${{ secrets.DOCKERHUB_USERNAME }}/mygameslist:${{ github.sha }}
