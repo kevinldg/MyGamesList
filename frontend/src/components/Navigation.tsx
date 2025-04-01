@@ -14,6 +14,13 @@ export default function Navigation() {
 
     const navigationItems: NavigationItemProps[] = [
         {
+            name: "Home",
+            url: "/",
+            isEnabled: true,
+            showOnRoutes: ["*"],
+            dontShowOnRoutes: ["/login", "/register"]
+        },
+        {
             name: "My Profile",
             url: "/profile",
             isEnabled: true,
