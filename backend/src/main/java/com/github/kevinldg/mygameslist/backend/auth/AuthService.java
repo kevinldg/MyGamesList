@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class AuthService {
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .createdAt(Instant.now())
+                .games(new ArrayList<>())
                 .build();
         userRepository.save(user);
 
@@ -52,7 +54,8 @@ public class AuthService {
         return new UserInfoDTO(
                 user.id(),
                 user.username(),
-                user.createdAt()
+                user.createdAt(),
+                user.games()
         );
     }
 }

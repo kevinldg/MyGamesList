@@ -1,11 +1,12 @@
 import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./layout.tsx";
-import ProfilePage from "./pages/ProfilePage.tsx";
+import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import IndexPage from "./pages/IndexPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import {AuthProvider, useAuth} from "./contexts/AuthContext.tsx";
 import {JSX} from "react";
+import AddGamePage from "./pages/profile/AddGamePage.tsx";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     const { token } = useAuth();
@@ -24,11 +25,16 @@ export default function App() {
                     }/>
                     <Route path="/login" element={<LoginPage/>}/>
                     <Route path="/register" element={<RegisterPage/>}/>
-                        <Route path="/profile" element={
-                            <PrivateRoute>
-                                <ProfilePage/>
-                            </PrivateRoute>
-                        }/>
+                    <Route path="/profile" element={
+                        <PrivateRoute>
+                            <ProfilePage/>
+                        </PrivateRoute>
+                    }/>
+                    <Route path="/profile/add-game" element={
+                        <PrivateRoute>
+                            <AddGamePage/>
+                        </PrivateRoute>
+                    }/>
                 </Route>
             </Routes>
         </AuthProvider>
