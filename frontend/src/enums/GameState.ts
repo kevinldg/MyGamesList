@@ -1,0 +1,7 @@
+export enum GameState {
+    PLAYING = "PLAYING",
+    COMPLETED = "COMPLETED",
+    ON_HOLD = "ON_HOLD",
+    DROPPED = "DROPPED",
+    PLANNED_TO_PLAY = "PLANNED_TO_PLAY"
+}
