@@ -10,6 +10,8 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
     const handleSubmit = (username: string, password: string) => {
+        setError(null);
+
         axios.post("/api/auth/login", { username, password })
             .then(response => {
                 if (response.data.message === "Invalid credentials") {
