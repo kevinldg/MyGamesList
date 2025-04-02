@@ -10,8 +10,15 @@ export default function RegisterPage() {
     const navigate = useNavigate();
 
     const handleSubmit = (username: string, password: string) => {
+        setError(null);
+
         axios.post("/api/auth/register", { username, password })
             .then(response => {
+                if (response.data.message === "User already exists") {
+                    setError(response.data.message);
+                    return;
+                }
+
                 setToken(response.data.token);
                 navigate("/");
             })
