@@ -14,10 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -73,6 +70,33 @@ class UserUnitTest {
         Game addedGame = updatedUser.getFirst();
         assertEquals("Halo", addedGame.gameName());
         assertEquals(GameState.PLAYING, addedGame.gameState());
+        verify(userRepository, times(1)).save(ArgumentMatchers.any(User.class));
+    }
+
+    @Test
+    void testDeleteGameFromUser_Success() {
+        Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
+        when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        List<Game> updatedGames = userService.deleteGameFromUser("testUser", "Halo");
+        assertTrue(updatedGames.isEmpty());
+        verify(userRepository, times(1)).save(ArgumentMatchers.any(User.class));
+    }
+
+    @Test
+    void testUpdateGameFromUser_Success() {
+        Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
+        when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        GameDTO gameDTO = new GameDTO("Halo", GameState.COMPLETED);
+        List<Game> updatedGames = userService.updateGameFromUser("testUser", gameDTO);
+
+        assertEquals(1, updatedGames.size());
+        assertEquals(GameState.COMPLETED, updatedGames.getFirst().gameState());
         verify(userRepository, times(1)).save(ArgumentMatchers.any(User.class));
     }
 }
