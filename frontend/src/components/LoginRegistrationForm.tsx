@@ -39,6 +39,11 @@ export default function LoginRegistrationForm({ formType, onSubmit, error }: For
                 return;
             }
 
+            if (username.endsWith(" ")) {
+                setLocalError("The user name must not end with a space.");
+                return;
+            }
+
             if (/\s\s/.test(username)) {
                 setLocalError("The user name must not contain consecutive spaces.");
                 return;

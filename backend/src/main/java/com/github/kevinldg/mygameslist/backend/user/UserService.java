@@ -18,12 +18,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final IgdbService igdbService;
 
-    public User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found with id: " + id));
+    public User getUserByName(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found with name: " + username));
     }
 
-    public User addGameToUser(String userId, GameDTO gameDTO) {
-        User user = getUserById(userId);
+    public List<Game> addGameToUser(String username, GameDTO gameDTO) {
+        User user = getUserByName(username);
 
         if (user.games().stream().anyMatch(game ->
                 game.gameName().equals(gameDTO.gameName()))) {
@@ -42,11 +42,13 @@ public class UserService {
         user.games().add(gameToAdd);
 
         User updatedUser = user.withGames(user.games());
-        return userRepository.save(updatedUser);
+        userRepository.save(updatedUser);
+
+        return user.games();
     }
 
-    public User deleteGameFromUser(String userId, String gameName) {
-        User user = getUserById(userId);
+    public List<Game> deleteGameFromUser(String username, String gameName) {
+        User user = getUserByName(username);
 
         if (user.games().stream().noneMatch(game ->
                 game.gameName().equals(gameName))) {
@@ -56,12 +58,13 @@ public class UserService {
         List<Game> updatedGames = user.games().stream()
                 .filter(game -> !Objects.equals(game.gameName(), gameName))
                 .collect(Collectors.toList());
+        userRepository.save(user.withGames(updatedGames));
 
-        return userRepository.save(user.withGames(updatedGames));
+        return updatedGames;
     }
 
-    public User updateGameFromUser(String userId, GameDTO gameDTO) {
-        User user = getUserById(userId);
+    public List<Game> updateGameFromUser(String username, GameDTO gameDTO) {
+        User user = getUserByName(username);
 
         if (user.games().stream().noneMatch(game ->
                 game.gameName().equals(gameDTO.gameName()))) {
@@ -73,7 +76,8 @@ public class UserService {
                         ? gameFromUser.withGameState(gameDTO.gameState())
                         : gameFromUser)
                 .collect(Collectors.toList());
+        userRepository.save(user.withGames(updatedGames));
 
-        return userRepository.save(user.withGames(updatedGames));
+        return updatedGames;
     }
 }

@@ -21,10 +21,13 @@ public class AuthService {
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public String register(String username, String password) {
+    public String register(String username, String password, String repeatPassword) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UserAlreadyExistsException("User already exists");
         }
+
+        InputValidator.validateUsername(username);
+        InputValidator.validatePassword(password, repeatPassword);
 
         User user = User.builder()
                 .username(username)
