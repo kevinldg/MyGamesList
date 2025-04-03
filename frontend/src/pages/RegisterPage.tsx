@@ -9,10 +9,15 @@ export default function RegisterPage() {
     const { token, setToken } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (username: string, password: string) => {
+    const handleSubmit = (username: string, password: string, repeatPassword?: string) => {
         setError(null);
 
-        axios.post("/api/auth/register", { username, password })
+        if (repeatPassword === undefined) {
+            setError("Please repeat the password.");
+            return;
+        }
+
+        axios.post("/api/auth/register", { username, password, repeatPassword})
             .then(response => {
                 if (response.data.message === "User already exists") {
                     setError(response.data.message);
