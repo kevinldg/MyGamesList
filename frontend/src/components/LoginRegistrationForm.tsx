@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 type FormProps = {
     formType: "login" | "register";
-    onSubmit: (username: string, password: string) => void;
+    onSubmit: (username: string, password: string, repeatPassword?: string) => void;
     error: string | null;
 };
 
@@ -63,7 +63,7 @@ export default function LoginRegistrationForm({ formType, onSubmit, error }: For
             }
         }
 
-        onSubmit(username, password);
+        onSubmit(username, password, repeatPassword);
     };
 
     return (
