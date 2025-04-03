@@ -26,7 +26,8 @@ class AuthIntegrationTest {
         String requestBody = """
                 {
                     "username": "testuser",
-                    "password": "password123"
+                    "password": "password123!",
+                    "repeatPassword": "password123!"
                 }
                 """;
 
@@ -44,7 +45,15 @@ class AuthIntegrationTest {
         String registerRequestBody = """
                 {
                     "username": "testuser",
-                    "password": "password123"
+                    "password": "password123!",
+                    "repeatPassword": "password123!"
+                }
+                """;
+
+        String loginRequestBody = """
+                {
+                    "username": "testuser",
+                    "password": "password123!"
                 }
                 """;
 
@@ -54,7 +63,7 @@ class AuthIntegrationTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(registerRequestBody))
+                        .content(loginRequestBody))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.token").exists());
@@ -66,7 +75,8 @@ class AuthIntegrationTest {
         String registerRequestBody = """
             {
                 "username": "testuser",
-                "password": "password123"
+                "password": "password123!",
+                "repeatPassword": "password123!"
             }
             """;
 

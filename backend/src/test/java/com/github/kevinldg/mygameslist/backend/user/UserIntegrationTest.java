@@ -22,11 +22,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(username = "testId")
 class UserIntegrationTest {
 
     @Autowired
@@ -46,26 +47,25 @@ class UserIntegrationTest {
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
         User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(game));
 
-        when(userService.addGameToUser(eq(userId), any(GameDTO.class))).thenReturn(user);
+        when(userService.addGameToUser(eq(userId), any(GameDTO.class))).thenReturn(user.games());
 
-        mockMvc.perform(post("/api/user/{userId}/games", userId)
+        mockMvc.perform(post("/api/user/games")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(gameDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
-                .andExpect(jsonPath("$.games[0].gameName").value("Halo"));
+                .andExpect(jsonPath("$[0].gameName").value("Halo"));
     }
 
     @Test
     void testDeleteGameFromUser() throws Exception {
         User user = new User(userId, "testUser", "hash", Instant.now(), Collections.emptyList());
 
-        when(userService.deleteGameFromUser(eq(userId), eq("Halo"))).thenReturn(user);
+        when(userService.deleteGameFromUser(eq(userId), eq("Halo"))).thenReturn(user.games());
 
-        mockMvc.perform(delete("/api/user/{userId}/games", userId)
+        mockMvc.perform(delete("/api/user/games")
                         .param("gameName", "Halo"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.games").isEmpty());
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
@@ -74,12 +74,12 @@ class UserIntegrationTest {
         Game updatedGame = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.COMPLETED);
         User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(updatedGame));
 
-        when(userService.updateGameFromUser(eq(userId), any(GameDTO.class))).thenReturn(user);
+        when(userService.updateGameFromUser(eq(userId), any(GameDTO.class))).thenReturn(user.games());
 
-        mockMvc.perform(put("/api/user/{userId}/games", userId)
+        mockMvc.perform(put("/api/user/games")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(gameDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.games[0].gameState").value("COMPLETED"));
+                .andExpect(jsonPath("$[0].gameState").value("COMPLETED"));
     }
 }

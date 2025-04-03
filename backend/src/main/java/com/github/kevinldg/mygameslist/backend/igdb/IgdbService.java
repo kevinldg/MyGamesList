@@ -3,6 +3,7 @@ package com.github.kevinldg.mygameslist.backend.igdb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kevinldg.mygameslist.backend.exception.IgdbException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -68,6 +69,7 @@ public class IgdbService {
         }
     }
 
+    @Cacheable("igdbGameAndArtwork")
     public IgdbGameAndArtwork searchGameAndArtworkByName(String name) {
         IgdbGame game = searchGameByName(name);
 

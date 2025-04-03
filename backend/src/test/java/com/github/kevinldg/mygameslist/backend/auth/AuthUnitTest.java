@@ -37,7 +37,7 @@ class AuthUnitTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     private final String testUsername = "testuser";
-    private final String testPassword = "password123";
+    private final String testPassword = "password123!";
     private final String encodedPassword = "encodedPassword";
     private final String testToken = "jwtToken";
 
@@ -56,7 +56,7 @@ class AuthUnitTest {
                 .password(encodedPassword)
                 .build());
 
-        String result = authService.register(testUsername, testPassword);
+        String result = authService.register(testUsername, testPassword, testPassword);
 
         assertEquals(testToken, result);
         verify(userRepository).findByUsername(testUsername);
@@ -74,7 +74,7 @@ class AuthUnitTest {
                         .build()));
 
         assertThrows(UserAlreadyExistsException.class, () ->
-                authService.register(testUsername, testPassword));
+                authService.register(testUsername, testPassword, testPassword));
 
         verify(userRepository).findByUsername(testUsername);
         verify(userRepository, never()).save(any(User.class));

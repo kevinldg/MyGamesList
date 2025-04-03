@@ -12,14 +12,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public Token register(@RequestBody AuthDTO authDTO) {
-        String token = authService.register(authDTO.username(), authDTO.password());
+    public Token register(@RequestBody RegisterDTO registerDTO) {
+        String token = authService.register(registerDTO.username(), registerDTO.password(), registerDTO.repeatPassword());
         return new Token(token);
     }
 
     @PostMapping("/login")
-    public Token login(@RequestBody AuthDTO authDTO) {
-        String token = authService.login(authDTO.username(), authDTO.password());
+    public Token login(@RequestBody LoginDTO loginDTO) {
+        String token = authService.login(loginDTO.username(), loginDTO.password());
         return new Token(token);
     }
 
