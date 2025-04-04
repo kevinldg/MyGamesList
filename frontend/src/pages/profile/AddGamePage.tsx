@@ -6,7 +6,7 @@ import {GameState} from "../../enums/GameState.ts";
 import {useNavigate} from "react-router-dom";
 
 export default function AddGamePage() {
-    const {user, token} = useAuth();
+    const {token} = useAuth();
     const [gameName, setGameName] = useState("");
     const [foundGame, setFoundGame] = useState<Game | null>(null);
     const [gameState, setGameState] = useState<GameState>(GameState.PLAYING);
@@ -31,7 +31,7 @@ export default function AddGamePage() {
     const onAddSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
 
-        axios.post(`/api/user/${user?.id}/games`,
+        axios.post(`/api/user/games`,
             {
                 "gameName": foundGame?.gameName,
                 "gameState": gameState

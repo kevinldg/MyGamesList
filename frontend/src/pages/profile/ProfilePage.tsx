@@ -23,7 +23,7 @@ export default function ProfilePage() {
     }, [location.state]);
 
     const deleteGame = (gameName: string) => {
-        axios.delete(`/api/user/${user?.id}/games`, {
+        axios.delete(`/api/user/games`, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -40,7 +40,7 @@ export default function ProfilePage() {
     };
 
     const updateGame = (gameName: string, gameState: GameState) => {
-        axios.put(`/api/user/${user?.id}/games`,
+        axios.put(`/api/user/games`,
             {
                 "gameName": gameName,
                 "gameState": gameState
