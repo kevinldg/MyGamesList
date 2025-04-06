@@ -6,7 +6,7 @@ import {GameState} from "../../enums/GameState.ts";
 import {useNavigate} from "react-router-dom";
 
 export default function AddGamePage() {
-    const {token} = useAuth();
+    const { token, fetchUser } = useAuth();
     const [gameName, setGameName] = useState("");
     const [foundGame, setFoundGame] = useState<Game | null>(null);
     const [gameState, setGameState] = useState<GameState>(GameState.PLAYING);
@@ -43,7 +43,8 @@ export default function AddGamePage() {
             })
             .then(response => {
                 if (response.status === 200) {
-                    navigate("/profile", { state: { addedGame: {...foundGame, gameState} } });
+                    fetchUser();
+                    navigate("/profile");
                 }
             })
             .catch(error => {
