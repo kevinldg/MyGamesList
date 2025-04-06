@@ -6,6 +6,7 @@ interface AuthContextType {
     token: string | null;
     user: User | null;
     setToken: (token: string | null) => void;
+    fetchUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
     const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
+    const fetchUser = () => {
         if (token) {
             axios.get("/api/auth/me", {
                 headers: {
@@ -30,6 +31,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
             setUser(null);
         }
+    };
+
+    useEffect(() => {
+        fetchUser();
     }, [token]);
 
     const handleSetToken = (token: string | null) => {
@@ -42,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, user, setToken: handleSetToken }}>
+        <AuthContext.Provider value={{ token, user, setToken: handleSetToken, fetchUser }}>
             {children}
         </AuthContext.Provider>
     );

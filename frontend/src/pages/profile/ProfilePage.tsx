@@ -2,7 +2,7 @@ import {useAuth} from "../../contexts/AuthContext.tsx";
 import {formatDate} from "../../utils/dateUtils.ts";
 import {Game} from "../../types/Game.ts";
 import {useEffect, useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 import axios from "axios";
 import {GameState} from "../../enums/GameState.ts";
 import GameEntry from "../../components/GameEntry.tsx";
@@ -14,13 +14,6 @@ export default function ProfilePage() {
     useEffect(() => {
         setGames(user?.games);
     }, [user]);
-
-    const location = useLocation();
-    useEffect(() => {
-        if (location.state && location.state.addedGame) {
-            setGames(prevGames => [...(prevGames || []), location.state.addedGame]);
-        }
-    }, [location.state]);
 
     const deleteGame = (gameName: string) => {
         axios.delete(`/api/user/games`, {
