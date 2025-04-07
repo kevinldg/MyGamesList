@@ -5,7 +5,7 @@ import Navigation from "./components/Navigation.tsx";
 
 export default function Layout() {
     return (
-        <div className="w-screen min-h-screen bg-mgl-dark-900 text-white">
+        <div className="w-full min-h-screen bg-mgl-dark-900 text-white">
             <Container>
                 <Header />
                 <Navigation />

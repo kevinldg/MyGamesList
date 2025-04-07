@@ -80,4 +80,11 @@ public class UserService {
 
         return updatedGames;
     }
+
+    public Game setFavoriteGameFromUser(String username, Game game) {
+        User user = getUserByName(username);
+        userRepository.save(user.withFavoriteGame(game));
+
+        return game;
+    }
 }

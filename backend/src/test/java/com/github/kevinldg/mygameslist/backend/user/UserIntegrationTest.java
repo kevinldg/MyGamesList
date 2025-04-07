@@ -45,7 +45,7 @@ class UserIntegrationTest {
     void testAddGameToUser() throws Exception {
         GameDTO gameDTO = new GameDTO("Halo", GameState.PLAYING);
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
-        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(game));
+        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(game), game);
 
         when(userService.addGameToUser(eq(userId), any(GameDTO.class))).thenReturn(user.games());
 
@@ -58,7 +58,8 @@ class UserIntegrationTest {
 
     @Test
     void testDeleteGameFromUser() throws Exception {
-        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.emptyList());
+        Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
+        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.emptyList(), game);
 
         when(userService.deleteGameFromUser(eq(userId), eq("Halo"))).thenReturn(user.games());
 
@@ -72,7 +73,7 @@ class UserIntegrationTest {
     void testUpdateGameFromUser() throws Exception {
         GameDTO gameDTO = new GameDTO("Halo", GameState.COMPLETED);
         Game updatedGame = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.COMPLETED);
-        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(updatedGame));
+        User user = new User(userId, "testUser", "hash", Instant.now(), Collections.singletonList(updatedGame), updatedGame);
 
         when(userService.updateGameFromUser(eq(userId), any(GameDTO.class))).thenReturn(user.games());
 

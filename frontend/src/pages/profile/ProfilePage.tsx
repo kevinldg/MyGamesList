@@ -6,12 +6,16 @@ import {Link} from "react-router-dom";
 import axios from "axios";
 import {GameState} from "../../enums/GameState.ts";
 import GameEntry from "../../components/GameEntry.tsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faStar} from "@fortawesome/free-solid-svg-icons";
 
 export default function ProfilePage() {
     const {user, token} = useAuth();
     const [games, setGames] = useState<Game[] | undefined>(user?.games);
+    const [favoriteGame, setFavoriteGame] = useState<Game | undefined>(user?.favoriteGame);
 
     useEffect(() => {
+        setFavoriteGame(user?.favoriteGame);
         setGames(user?.games);
     }, [user]);
 
@@ -56,6 +60,22 @@ export default function ProfilePage() {
             });
     };
 
+    const favorGame = (game: Game) => {
+        axios.post(`/api/user/games/favorite`,
+            game,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then(() => {
+                setFavoriteGame(game);
+            })
+            .catch(error => {
+                console.error("Set favorite game error", error);
+            });
+    };
+
     return (
         <div>
             <div className="bg-mgl-dark-700 border-b-mgl-dark-400 border-b px-2 py-1 flex justify-between items-center">
@@ -67,17 +87,41 @@ export default function ProfilePage() {
                     <h2 className="text-lg font-semibold border-b-mgl-dark-400 border-b">Details</h2>
                     <p>Account created: {formatDate(user?.createdAt)}</p>
                 </div>
+                {
+                    favoriteGame && (
+                        <div>
+                            <div className="border-b-mgl-dark-400 border-b flex items-center gap-2">
+                                <h2 className="text-lg font-semibold">Favorite Game</h2>
+                                <FontAwesomeIcon icon={faStar}/>
+                            </div>
+                            <GameEntry game={favoriteGame} dontShowGameState={true} />
+                        </div>
+                    )
+                }
                 <div>
                     <div className="border-b-mgl-dark-400 border-b flex justify-between items-center">
                         <h2 className="text-lg font-semibold">Games</h2>
                         <Link to="/profile/add-game" className="px-1 py-0.5 rounded-xs text-xs bg-blue-500">Add Game</Link>
                     </div>
-                    <div>
-                        {
-                            games && games.map((game: Game) => (
-                                <GameEntry game={game} updateGame={updateGame} deleteGame={deleteGame} />
-                            ))
-                        }
+                    <div className="mb-4">
+                        {games && games.map((game: Game) => (
+                            favoriteGame?.gameName === game.gameName ? (
+                                <GameEntry
+                                    key={game.gameName}
+                                    game={game}
+                                    updateGame={updateGame}
+                                    deleteGame={deleteGame}
+                                />
+                            ) : (
+                                <GameEntry
+                                    key={game.gameName}
+                                    game={game}
+                                    updateGame={updateGame}
+                                    deleteGame={deleteGame}
+                                    favorGame={favorGame}
+                                />
+                            )
+                        ))}
                     </div>
                 </div>
             </div>

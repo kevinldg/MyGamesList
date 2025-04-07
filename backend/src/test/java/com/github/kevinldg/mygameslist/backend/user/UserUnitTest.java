@@ -36,7 +36,8 @@ class UserUnitTest {
     @BeforeEach
     void setup() {
         List<Game> games = new ArrayList<>();
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), games);
+        Game favoriteGame = new Game(1, "1", "1", 1, "1", GameState.COMPLETED);
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), games, favoriteGame);
     }
 
     @Test
@@ -76,7 +77,7 @@ class UserUnitTest {
     @Test
     void testDeleteGameFromUser_Success() {
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)), game);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
         when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -88,7 +89,7 @@ class UserUnitTest {
     @Test
     void testUpdateGameFromUser_Success() {
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)), game);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
         when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
 
