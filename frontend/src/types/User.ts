@@ -6,4 +6,5 @@ export type User = {
     password: string;
     createdAt: string;
     games: Game[];
+    favoriteGame: Game;
 }

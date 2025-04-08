@@ -14,6 +14,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/{username}")
+    public UserInfoDTO getUserByName(@PathVariable String username) {
+        User user = userService.getUserByName(username);
+        return new UserInfoDTO(user.id(), user.username(), user.createdAt(), user.games(), user.favoriteGame());
+    }
+
     @PostMapping("/games")
     public List<Game> addGameToUser(Authentication authentication, @RequestBody GameDTO gameDTO) { return userService.addGameToUser(authentication.getName(), gameDTO); }
 
@@ -22,4 +28,7 @@ public class UserController {
 
     @PutMapping("/games")
     public List<Game> updateGameFromUser(Authentication authentication, @RequestBody GameDTO gameDTO) { return userService.updateGameFromUser(authentication.getName(), gameDTO); }
+
+    @PostMapping("/games/favorite")
+    public Game setFavoriteGameFromUser(Authentication authentication, @RequestBody Game game) { return userService.setFavoriteGameFromUser(authentication.getName(), game); }
 }

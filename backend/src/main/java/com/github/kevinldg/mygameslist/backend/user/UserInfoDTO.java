@@ -9,5 +9,6 @@ public record UserInfoDTO(
         String id,
         String username,
         Instant createdAt,
-        List<Game> games
+        List<Game> games,
+        Game favoriteGame
 ) {}

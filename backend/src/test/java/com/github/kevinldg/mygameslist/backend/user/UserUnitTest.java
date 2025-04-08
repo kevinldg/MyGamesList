@@ -8,6 +8,7 @@ import com.github.kevinldg.mygameslist.backend.igdb.IgdbService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,7 +37,8 @@ class UserUnitTest {
     @BeforeEach
     void setup() {
         List<Game> games = new ArrayList<>();
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), games);
+        Game favoriteGame = new Game(1, "1", "1", 1, "1", GameState.COMPLETED);
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), games, favoriteGame);
     }
 
     @Test
@@ -76,7 +78,7 @@ class UserUnitTest {
     @Test
     void testDeleteGameFromUser_Success() {
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)), game);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
         when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -88,7 +90,7 @@ class UserUnitTest {
     @Test
     void testUpdateGameFromUser_Success() {
         Game game = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
-        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)));
+        testUser = new User("uniqueId", "testUser", "passwordHash", Instant.now(), new ArrayList<>(Collections.singletonList(game)), game);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
         when(userRepository.save(ArgumentMatchers.any(User.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -98,5 +100,29 @@ class UserUnitTest {
         assertEquals(1, updatedGames.size());
         assertEquals(GameState.COMPLETED, updatedGames.getFirst().gameState());
         verify(userRepository, times(1)).save(ArgumentMatchers.any(User.class));
+    }
+
+    @Test
+    void testSetFavoriteGameFromUser() {
+        Game favoriteGame = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        Game result = userService.setFavoriteGameFromUser("testUser", favoriteGame);
+        assertEquals("Halo", result.gameName());
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+        assertEquals("Halo", savedUser.favoriteGame().gameName());
+    }
+
+    @Test
+    void testWithFavoriteGame() {
+        Game newFavorite = new Game(2, "Halo 2", "Shooter Game", 456, "http://newurl", GameState.PLAYING);
+        User updatedUser = testUser.withFavoriteGame(newFavorite);
+        assertEquals("Halo 2", updatedUser.favoriteGame().gameName());
+        assertEquals(testUser.id(), updatedUser.id());
+        assertEquals(testUser.username(), updatedUser.username());
     }
 }

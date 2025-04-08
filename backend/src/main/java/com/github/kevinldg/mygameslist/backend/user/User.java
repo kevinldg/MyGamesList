@@ -15,9 +15,14 @@ public record User(
         String username,
         String password,
         Instant createdAt,
-        List<Game> games
+        List<Game> games,
+        Game favoriteGame
 ) {
     public User withGames(List<Game> games) {
-        return new User(this.id(), this.username(), this.password(), this.createdAt(), games);
+        return new User(this.id(), this.username(), this.password(), this.createdAt(), games, this.favoriteGame);
+    }
+
+    public User withFavoriteGame(Game game) {
+        return new User(this.id(), this.username(), this.password(), this.createdAt(), this.games(), game);
     }
 }

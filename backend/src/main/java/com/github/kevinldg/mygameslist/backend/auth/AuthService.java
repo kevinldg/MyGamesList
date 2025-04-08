@@ -34,6 +34,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(password))
                 .createdAt(Instant.now())
                 .games(new ArrayList<>())
+                .favoriteGame(null)
                 .build();
         userRepository.save(user);
 
@@ -58,7 +59,8 @@ public class AuthService {
                 user.id(),
                 user.username(),
                 user.createdAt(),
-                user.games()
+                user.games(),
+                user.favoriteGame()
         );
     }
 }

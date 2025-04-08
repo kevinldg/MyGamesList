@@ -35,6 +35,11 @@ export default function App() {
                             <AddGamePage/>
                         </PrivateRoute>
                     }/>
+                    <Route path="/user/:username" element={
+                        <PrivateRoute>
+                            <ProfilePage/>
+                        </PrivateRoute>
+                    }/>
                 </Route>
             </Routes>
         </AuthProvider>
