@@ -43,15 +43,17 @@ export default function ProfilePage() {
     useEffect(() => {
         if (username) {
             fetchUser();
-            setFavoriteGame(fetchedUser?.favoriteGame);
-            setGames(fetchedUser?.games);
-
         } else if (user) {
             setFetchedUser(user);
-            setFavoriteGame(user.favoriteGame);
-            setGames(user.games);
         }
     }, [user, username]);
+
+    useEffect(() => {
+        if (fetchedUser) {
+            setFavoriteGame(fetchedUser.favoriteGame);
+            setGames(fetchedUser.games);
+        }
+    }, [fetchedUser]);
 
     const deleteGame = (gameName: string) => {
         axios.delete(`/api/user/games`, {
