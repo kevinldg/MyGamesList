@@ -83,4 +83,16 @@ class UserIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].gameState").value("COMPLETED"));
     }
+
+    @Test
+    void testSetFavoriteGameEndpoint() throws Exception {
+        Game favoriteGame = new Game(123, "Halo", "Shooter Game", 123, "http://url", GameState.PLAYING);
+        when(userService.setFavoriteGameFromUser(eq(userId), any(Game.class))).thenReturn(favoriteGame);
+
+        mockMvc.perform(post("/api/user/games/favorite")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(favoriteGame)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameName").value("Halo"));
+    }
 }
