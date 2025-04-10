@@ -20,7 +20,7 @@ export default function GameEntry({game, deleteGame, updateGame, favorGame, dont
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <p className="text-lg">{game.gameName}</p>
-                        {!dontShowGameState && <span className="size-fit px-1 py-0.5 rounded-xs text-xs font-bold bg-blue-500">{game.gameState}</span>}
+                        {!dontShowGameState && <GameStateBadge gameState={game.gameState} />}
                     </div>
                     {
                         (updateGame || deleteGame || favorGame) && (
