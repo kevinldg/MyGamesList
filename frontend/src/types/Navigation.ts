@@ -3,5 +3,5 @@ export type NavigationItemProps = {
     url: string;
     isEnabled: boolean;
     showOnRoutes: string[];
-    dontShowOnRoutes: string[];
+    dontShowOnRoutes?: string[];
 };

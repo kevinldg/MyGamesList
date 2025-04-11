@@ -5,20 +5,22 @@ export default function Navigation() {
     const location = useLocation();
     const currentPath = location.pathname;
 
+    if (currentPath === "/login" || currentPath === "/register") {
+        return null;
+    }
+
     const navigationItems: NavigationItemProps[] = [
         {
             name: "Home",
             url: "/",
             isEnabled: true,
-            showOnRoutes: ["*"],
-            dontShowOnRoutes: ["/login", "/register"]
+            showOnRoutes: ["*"]
         },
         {
             name: "My Profile",
             url: "/profile",
             isEnabled: true,
-            showOnRoutes: ["*"],
-            dontShowOnRoutes: ["/login", "/register"]
+            showOnRoutes: ["*"]
         }
     ];
 
