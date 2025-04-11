@@ -3,19 +3,13 @@ import {formatDate} from "../../utils/dateUtils.ts";
 import {Game} from "../../types/Game.ts";
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
-import axios from "axios";
-import {GameState} from "../../enums/GameState.ts";
 import GameEntry from "../../components/GameEntry.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
-
-type UserProps = {
-    id: string;
-    username: string;
-    createdAt: string;
-    games: Game[];
-    favoriteGame: Game;
-};
+import {deleteGame, updateGame, favorGame} from "../../services/gameService.ts";
+import {fetchUser} from "../../services/userService.ts";
+import {GameState} from "../../enums/GameState.ts";
+import {UserProps} from "../../types/User.ts";
 
 export default function ProfilePage() {
     const {user, token} = useAuth();
@@ -23,26 +17,28 @@ export default function ProfilePage() {
     const params = useParams();
     const username = params.username;
 
-    const [fetchedUser, setFetchedUser] = useState<UserProps | null>();
-    const [games, setGames] = useState<Game[] | null>();
-    const [favoriteGame, setFavoriteGame] = useState<Game | null>();
+    const [fetchedUser, setFetchedUser] = useState<UserProps | null>(null);
+    const [games, setGames] = useState<Game[] | null>(null);
+    const [favoriteGame, setFavoriteGame] = useState<Game | null>(null);
 
-    const fetchUser = () => {
-        axios.get(`/api/user/${username}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(response => setFetchedUser(response.data))
-            .catch(error => {
-                console.error("Error getting user", error);
-                setFetchedUser(null);
-            });
+    const handleDeleteGame = (gameName: string) => {
+        if (!token) return;
+        deleteGame(gameName, token, setGames);
+    };
+
+    const handleUpdateGame = (gameName: string, gameState: GameState) => {
+        if (!token) return;
+        updateGame(gameName, gameState, token, setGames);
+    };
+
+    const handleFavorGame = (game: Game) => {
+        if (!token) return;
+        favorGame(game, token, setFavoriteGame);
     };
 
     useEffect(() => {
-        if (username) {
-            fetchUser();
+        if (username && token) {
+            fetchUser(username, token, setFetchedUser);
         } else if (user) {
             setFetchedUser(user);
         }
@@ -54,63 +50,6 @@ export default function ProfilePage() {
             setGames(fetchedUser.games);
         }
     }, [fetchedUser]);
-
-    const deleteGame = (gameName: string) => {
-        axios.delete(`/api/user/games`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            params: {
-                gameName: gameName
-            }
-        })
-            .then(() => {
-                setGames(prevGames => prevGames?.filter(game => game.gameName !== gameName));
-            })
-            .catch(error => {
-                console.error("Delete game error", error);
-            });
-    };
-
-    const updateGame = (gameName: string, gameState: GameState) => {
-        axios.put(`/api/user/games`,
-            {
-                "gameName": gameName,
-                "gameState": gameState
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then(() => {
-                setGames(prevGames => prevGames?.map(game =>
-                    game.gameName === gameName ? { ...game, gameState: gameState } : game
-                ));
-
-                const stateSelection = document.getElementById(gameName + "-state-select");
-                if (stateSelection) stateSelection.classList.toggle("hidden");
-            })
-            .catch(error => {
-                console.error("Update game error", error);
-            });
-    };
-
-    const favorGame = (game: Game) => {
-        axios.post(`/api/user/games/favorite`,
-            game,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then(() => {
-                setFavoriteGame(game);
-            })
-            .catch(error => {
-                console.error("Set favorite game error", error);
-            });
-    };
 
     return (
         <div>
@@ -142,12 +81,12 @@ export default function ProfilePage() {
                         {!username && <Link to="/profile/add-game" className="px-1 py-0.5 rounded-xs text-xs bg-blue-500">Add Game</Link>}
                     </div>
                     <div className="mb-4">
-                        {games && games.map((game: Game) => {
+                        {games?.map((game: Game) => {
                             if (!username) {
                                 if (favoriteGame?.gameName === game.gameName) {
-                                    return <GameEntry key={game.gameName} game={game} updateGame={updateGame} deleteGame={deleteGame} />;
+                                    return <GameEntry key={game.gameName} game={game} updateGame={handleUpdateGame} deleteGame={handleDeleteGame} />;
                                 }
-                                return <GameEntry key={game.gameName} game={game} updateGame={updateGame} deleteGame={deleteGame} favorGame={favorGame} />;
+                                return <GameEntry key={game.gameName} game={game} updateGame={handleUpdateGame} deleteGame={handleDeleteGame} favorGame={handleFavorGame} />;
                             } else {
                                 return <GameEntry key={game.gameName} game={game} />;
                             }

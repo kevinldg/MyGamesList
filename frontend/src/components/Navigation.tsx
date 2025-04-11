@@ -1,36 +1,31 @@
 import {Link, useLocation} from "react-router-dom";
-
-type NavigationItemProps = {
-    name: string;
-    url: string;
-    isEnabled: boolean;
-    showOnRoutes: string[];
-    dontShowOnRoutes: string[];
-};
+import {NavigationItemProps} from "../types/Navigation.ts";
 
 export default function Navigation() {
     const location = useLocation();
     const currentPath = location.pathname;
+
+    if (currentPath === "/login" || currentPath === "/register") {
+        return null;
+    }
 
     const navigationItems: NavigationItemProps[] = [
         {
             name: "Home",
             url: "/",
             isEnabled: true,
-            showOnRoutes: ["*"],
-            dontShowOnRoutes: ["/login", "/register"]
+            showOnRoutes: ["*"]
         },
         {
             name: "My Profile",
             url: "/profile",
             isEnabled: true,
-            showOnRoutes: ["*"],
-            dontShowOnRoutes: ["/login", "/register"]
+            showOnRoutes: ["*"]
         }
     ];
 
     const shouldShowItem = (item: {showOnRoutes: string[], dontShowOnRoutes?: string[]}) => {
-        if (item.dontShowOnRoutes && item.dontShowOnRoutes.includes(currentPath)) {
+        if (item.dontShowOnRoutes?.includes(currentPath)) {
             return false;
         }
 

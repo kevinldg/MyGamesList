@@ -8,3 +8,11 @@ export type User = {
     games: Game[];
     favoriteGame: Game;
 }
+
+export type UserProps = {
+    id: string;
+    username: string;
+    createdAt: string;
+    games: Game[];
+    favoriteGame: Game;
+};
