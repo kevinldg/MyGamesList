@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import { Navigate, useNavigate } from "react-router-dom";
-import axios from "axios";
 import LoginRegistrationForm from "../components/LoginRegistrationForm";
+import {submitRegister} from "../services/authService.ts";
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
@@ -17,20 +17,7 @@ export default function RegisterPage() {
             return;
         }
 
-        axios.post("/api/auth/register", { username, password, repeatPassword})
-            .then(response => {
-                if (response.data.message === "User already exists") {
-                    setError(response.data.message);
-                    return;
-                }
-
-                setToken(response.data.token);
-                navigate("/");
-            })
-            .catch(error => {
-                console.error("Registration failed", error);
-                setError("Registration failed. Please try again.");
-            });
+        submitRegister(username, password, repeatPassword, setError, setToken, navigate);
     };
 
     return token ? <Navigate to="/" /> : (
