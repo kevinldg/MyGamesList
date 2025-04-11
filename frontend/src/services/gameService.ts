@@ -59,3 +59,25 @@ export const favorGame = (game: Game, token: string, setFavoriteGame: Dispatch<S
             console.error("Set favorite game error", error);
         });
 };
+
+export const searchGame = (gameName: string, token: string): Promise<Game> => {
+    return axios.get("/api/igdb/game-and-artwork", {
+        params: { name: gameName },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then(response => response.data);
+};
+
+export const addGame = (game: Game, gameState: GameState, token: string) => {
+    return axios.post(`/api/user/games`,
+        {
+            gameName: game.gameName,
+            gameState: gameState
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+};

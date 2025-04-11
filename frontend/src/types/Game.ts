@@ -8,3 +8,11 @@ export type Game = {
     artworkUrl: string;
     gameState: GameState;
 };
+
+export type GameEntryProps = {
+    game: Game;
+    updateGame?: (gameName: string, gameState: GameState) => void;
+    deleteGame?: (gameName: string) => void;
+    favorGame?: (game: Game) => void;
+    dontShowGameState?: boolean;
+}

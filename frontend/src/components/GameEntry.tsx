@@ -2,15 +2,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPen, faStar, faTrash} from "@fortawesome/free-solid-svg-icons";
 import GameStateBadge from "./GameStateBadge.tsx";
 import {GameState} from "../enums/GameState.ts";
-import {Game} from "../types/Game.ts";
-
-type GameEntryProps = {
-    game: Game;
-    updateGame?: (gameName: string, gameState: GameState) => void;
-    deleteGame?: (gameName: string) => void;
-    favorGame?: (game: Game) => void;
-    dontShowGameState?: boolean;
-}
+import {GameEntryProps} from "../types/Game.ts";
 
 export default function GameEntry({game, deleteGame, updateGame, favorGame, dontShowGameState}: GameEntryProps) {
     return (
@@ -40,11 +32,9 @@ export default function GameEntry({game, deleteGame, updateGame, favorGame, dont
                     updateGame && (
                         <div id={game.gameName + "-state-select"} className="hidden pt-1 flex items-center gap-2">
                             <p>Select new state:</p>
-                            <GameStateBadge updateGame={updateGame} game={game} gameState={GameState.PLAYING} />
-                            <GameStateBadge updateGame={updateGame} game={game} gameState={GameState.COMPLETED} />
-                            <GameStateBadge updateGame={updateGame} game={game} gameState={GameState.ON_HOLD} />
-                            <GameStateBadge updateGame={updateGame} game={game} gameState={GameState.DROPPED} />
-                            <GameStateBadge updateGame={updateGame} game={game} gameState={GameState.PLANNED_TO_PLAY} />
+                            {Object.values(GameState).map(state => {
+                                return (<GameStateBadge key={state} updateGame={updateGame} game={game} gameState={state} />);
+                            })}
                         </div>
                     )
                 }

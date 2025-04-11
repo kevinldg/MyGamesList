@@ -1,56 +1,38 @@
 import {useState} from "react";
-import axios from "axios";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {Game} from "../../types/Game.ts";
 import {GameState} from "../../enums/GameState.ts";
 import {useNavigate} from "react-router-dom";
+import {addGame, searchGame} from "../../services/gameService.ts";
+import {getBadgeProperties} from "../../utils/gameStateUtils.ts";
 
 export default function AddGamePage() {
     const { token, fetchUser } = useAuth();
+
     const [gameName, setGameName] = useState("");
     const [foundGame, setFoundGame] = useState<Game | null>(null);
     const [gameState, setGameState] = useState<GameState>(GameState.PLAYING);
+
     const navigate = useNavigate();
 
-    const onSearchSubmit = (event: { preventDefault: () => void; }) => {
+    const onSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        axios.get("/api/igdb/game-and-artwork", {
-            params: {name: gameName},
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(response => setFoundGame(response.data))
-            .catch(error => {
-                console.error("Game search error", error);
-            });
-
+        if (token) {
+            searchGame(gameName, token)
+                .then(game => { setFoundGame(game);})
+                .catch(error => { console.error("Game search error", error); });
+        }
     };
 
-    const onAddSubmit = (event: { preventDefault: () => void; }) => {
+    const onAddSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        axios.post(`/api/user/games`,
-            {
-                "gameName": foundGame?.gameName,
-                "gameState": gameState
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    fetchUser();
-                    navigate("/profile");
-                }
-            })
-            .catch(error => {
-                console.error("Add game error", error);
-            });
-
+        if (token && foundGame) {
+            addGame(foundGame, gameState, token)
+                .then(response => { if (response.status === 200) { fetchUser(); navigate("/profile"); } })
+                .catch(error => { console.error("Add game error", error); });
+        }
     };
 
     return (
@@ -86,11 +68,14 @@ export default function AddGamePage() {
                                 setGameState(event.target.value as GameState);
                             }}
                             className="bg-mgl-dark-900">
-                            <option value="PLAYING">Playing</option>
-                            <option value="COMPLETED">Completed</option>
-                            <option value="ON_HOLD">On Hold</option>
-                            <option value="DROPPED">Dropped</option>
-                            <option value="PLANNED_TO_PLAY">Planned to play</option>
+                            {Object.values(GameState).map(state => {
+                                const { label } = getBadgeProperties(state as GameState);
+                                return (
+                                    <option key={state} value={state}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
                         </select>
                         <button type="submit" className="px-1 py-0.5 rounded text-sm bg-blue-500">Add</button>
                     </form>

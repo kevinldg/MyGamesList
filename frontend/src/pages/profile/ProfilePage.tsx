@@ -3,20 +3,13 @@ import {formatDate} from "../../utils/dateUtils.ts";
 import {Game} from "../../types/Game.ts";
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
-import axios from "axios";
 import GameEntry from "../../components/GameEntry.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
 import {deleteGame, updateGame, favorGame} from "../../services/gameService.ts";
+import {fetchUser} from "../../services/userService.ts";
 import {GameState} from "../../enums/GameState.ts";
-
-type UserProps = {
-    id: string;
-    username: string;
-    createdAt: string;
-    games: Game[];
-    favoriteGame: Game;
-};
+import {UserProps} from "../../types/User.ts";
 
 export default function ProfilePage() {
     const {user, token} = useAuth();
@@ -27,19 +20,6 @@ export default function ProfilePage() {
     const [fetchedUser, setFetchedUser] = useState<UserProps | null>(null);
     const [games, setGames] = useState<Game[] | null>(null);
     const [favoriteGame, setFavoriteGame] = useState<Game | null>(null);
-
-    const fetchUser = () => {
-        axios.get(`/api/user/${username}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(response => setFetchedUser(response.data))
-            .catch(error => {
-                console.error("Error getting user", error);
-                setFetchedUser(null);
-            });
-    };
 
     const handleDeleteGame = (gameName: string) => {
         if (!token) return;
@@ -57,8 +37,8 @@ export default function ProfilePage() {
     };
 
     useEffect(() => {
-        if (username) {
-            fetchUser();
+        if (username && token) {
+            fetchUser(username, token, setFetchedUser);
         } else if (user) {
             setFetchedUser(user);
         }
