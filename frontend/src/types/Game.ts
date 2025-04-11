@@ -16,3 +16,9 @@ export type GameEntryProps = {
     favorGame?: (game: Game) => void;
     dontShowGameState?: boolean;
 }
+
+export type GameStateBadgeProps = {
+    updateGame?: (gameName: string, gameState: GameState) => void;
+    game?: Game;
+    gameState: GameState;
+}

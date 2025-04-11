@@ -1,11 +1,6 @@
 import {FormEvent, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
-
-type FormProps = {
-    formType: "login" | "register";
-    onSubmit: (username: string, password: string, repeatPassword?: string) => void;
-    error: string | null;
-};
+import {FormProps} from "../types/Form.ts";
 
 export default function LoginRegistrationForm({ formType, onSubmit, error }: FormProps) {
     const [username, setUsername] = useState("");

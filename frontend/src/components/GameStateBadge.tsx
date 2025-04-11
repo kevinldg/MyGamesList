@@ -1,12 +1,5 @@
-import {GameState} from "../enums/GameState.ts";
-import {Game} from "../types/Game.ts";
 import {getBadgeProperties} from "../utils/gameStateUtils.ts";
-
-type GameStateBadgeProps = {
-    updateGame?: (gameName: string, gameState: GameState) => void;
-    game?: Game;
-    gameState: GameState;
-}
+import {GameStateBadgeProps} from "../types/Game.ts";
 
 export default function GameStateBadge({updateGame, game, gameState}: GameStateBadgeProps) {
     const { label, color } = getBadgeProperties(gameState);
