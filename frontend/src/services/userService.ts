@@ -14,3 +14,16 @@ export const fetchUser = (username: string, token: string, setFetchedUser: Dispa
             setFetchedUser(null);
         });
 };
+
+export const fetchUsers = (token: string, setFetchedUsers: Dispatch<SetStateAction<UserProps[] | []>>) => {
+    axios.get(`/api/user`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+        .then(response => setFetchedUsers(response.data))
+        .catch(error => {
+            console.error("Error getting users", error);
+            setFetchedUsers([]);
+        });
+};

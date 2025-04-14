@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +19,10 @@ public class UserService {
 
     public User getUserByName(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found with name: " + username));
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public List<Game> addGameToUser(String username, GameDTO gameDTO) {
@@ -57,7 +60,7 @@ public class UserService {
 
         List<Game> updatedGames = user.games().stream()
                 .filter(game -> !Objects.equals(game.gameName(), gameName))
-                .collect(Collectors.toList());
+                .toList();
         userRepository.save(user.withGames(updatedGames));
 
         return updatedGames;
@@ -75,7 +78,7 @@ public class UserService {
                 .map(gameFromUser -> Objects.equals(gameFromUser.gameName(), gameDTO.gameName())
                         ? gameFromUser.withGameState(gameDTO.gameState())
                         : gameFromUser)
-                .collect(Collectors.toList());
+                .toList();
         userRepository.save(user.withGames(updatedGames));
 
         return updatedGames;
