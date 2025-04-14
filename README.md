@@ -1,3 +1,5 @@
+![MyGamesList_Banner](https://github.com/user-attachments/assets/5dda1c89-cedd-4008-90e3-158962196a07)
+
 # MyGamesList
 
 An App where you can list your games and at which point you're at each game, inspired by [MyAnimeList](https://myanimelist.net).
