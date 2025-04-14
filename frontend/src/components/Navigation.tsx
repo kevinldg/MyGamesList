@@ -21,6 +21,12 @@ export default function Navigation() {
             url: "/profile",
             isEnabled: true,
             showOnRoutes: ["*"]
+        },
+        {
+            name: "Search user",
+            url: "/user/search",
+            isEnabled: true,
+            showOnRoutes: ["*"]
         }
     ];
 
