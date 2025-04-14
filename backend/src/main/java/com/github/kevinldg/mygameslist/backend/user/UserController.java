@@ -20,6 +20,19 @@ public class UserController {
         return new UserInfoDTO(user.id(), user.username(), user.createdAt(), user.games(), user.favoriteGame());
     }
 
+    @GetMapping
+    public List<UserInfoDTO> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(user -> new UserInfoDTO(
+                        user.id(),
+                        user.username(),
+                        user.createdAt(),
+                        user.games(),
+                        user.favoriteGame()
+                ))
+                .toList();
+    }
+
     @PostMapping("/games")
     public List<Game> addGameToUser(Authentication authentication, @RequestBody GameDTO gameDTO) { return userService.addGameToUser(authentication.getName(), gameDTO); }
 

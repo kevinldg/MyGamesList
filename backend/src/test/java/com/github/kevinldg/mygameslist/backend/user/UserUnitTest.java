@@ -59,6 +59,24 @@ class UserUnitTest {
     }
 
     @Test
+    void testGetAllUsers() {
+        List<User> users = List.of(
+                new User("id1", "user1", "passwordHash1", Instant.now(), new ArrayList<>(), null),
+                new User("id2", "user2", "passwordHash2", Instant.now(), new ArrayList<>(), null)
+        );
+
+        when(userRepository.findAll()).thenReturn(users);
+        List<User> result = userService.getAllUsers();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("user1", result.get(0).username());
+        assertEquals("user2", result.get(1).username());
+
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
     void testAddGameToUser_Success() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
         IgdbGameAndArtwork igdbResult = new IgdbGameAndArtwork(123, "Halo", "Shooter Game", 123, "http://url");

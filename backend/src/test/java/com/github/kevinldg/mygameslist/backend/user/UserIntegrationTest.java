@@ -15,13 +15,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +39,33 @@ class UserIntegrationTest {
     private ObjectMapper objectMapper;
 
     private final String userId = "testId";
+
+    @Test
+    void testGetUserByName() throws Exception {
+        User user = new User("uniqueId", "testUser", "passwordHash", Instant.now(), Collections.emptyList(), null);
+        when(userService.getUserByName(eq("testUser"))).thenReturn(user);
+
+        mockMvc.perform(get("/api/user/testUser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("uniqueId"))
+                .andExpect(jsonPath("$.username").value("testUser"));
+    }
+
+    @Test
+    void testGetAllUsers() throws Exception {
+        User user1 = new User("id1", "user1", "passHash", Instant.now(), Collections.emptyList(), null);
+        User user2 = new User("id2", "user2", "passHash", Instant.now(), Collections.emptyList(), null);
+
+        List<User> users = List.of(user1, user2);
+
+
+        when(userService.getAllUsers()).thenReturn(users);
+
+        mockMvc.perform(get("/api/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("user1"))
+                .andExpect(jsonPath("$[1].username").value("user2"));
+    }
 
     @Test
     void testAddGameToUser() throws Exception {
