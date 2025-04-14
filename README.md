@@ -3,6 +3,7 @@
 # MyGamesList
 
 An App where you can list your games and at which point you're at each game, inspired by [MyAnimeList](https://myanimelist.net).
+Get a first impression [here](https://mygameslist.gunsh0tzz.dev)!
 
 Frontend
 
