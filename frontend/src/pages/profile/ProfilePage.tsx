@@ -78,7 +78,7 @@ export default function ProfilePage() {
                 <div>
                     <div className="border-b-mgl-dark-400 border-b flex justify-between items-center">
                         <h2 className="text-lg font-semibold">Games</h2>
-                        {!username && <Link to="/profile/add-game" className="px-1 py-0.5 rounded-xs text-xs bg-blue-500">Add Game</Link>}
+                        {!username && <Link to="/profile/add-game" className="px-1 py-0.5 rounded-xs text-xs bg-blue-500 hover:bg-blue-600 hover:cursor-pointer">Add Game</Link>}
                     </div>
                     <div className="mb-4">
                         {games?.map((game: Game) => {
