@@ -9,6 +9,7 @@ import {JSX} from "react";
 import AddGamePage from "./pages/profile/AddGamePage.tsx";
 import UserSearchPage from "./pages/UserSearchPage.tsx";
 import AllUsersPage from "./pages/AllUsersPage.tsx";
+import AboutPage from "./pages/AboutPage.tsx";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     const { token } = useAuth();
@@ -20,13 +21,14 @@ export default function App() {
         <AuthProvider>
             <Routes>
                 <Route path="/" element={<Layout/>}>
+                    <Route path="/login" element={<LoginPage/>}/>
+                    <Route path="/register" element={<RegisterPage/>}/>
+                    <Route path="/about" element={<AboutPage/>}/>
                     <Route index element={
                         <PrivateRoute>
                             <IndexPage/>
                         </PrivateRoute>
                     }/>
-                    <Route path="/login" element={<LoginPage/>}/>
-                    <Route path="/register" element={<RegisterPage/>}/>
                     <Route path="/profile" element={
                         <PrivateRoute>
                             <ProfilePage/>

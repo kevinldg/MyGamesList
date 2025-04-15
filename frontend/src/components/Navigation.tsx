@@ -33,6 +33,12 @@ export default function Navigation() {
             url: "/user/search",
             isEnabled: true,
             showOnRoutes: ["*"]
+        },
+        {
+            name: "About",
+            url: "/about",
+            isEnabled: true,
+            showOnRoutes: ["*"]
         }
     ];
 

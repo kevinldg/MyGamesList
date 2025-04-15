@@ -1,4 +1,7 @@
+@import "./styles.css";
+
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
     --color-mgl-dark-900: #121212;
