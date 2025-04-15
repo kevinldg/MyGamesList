@@ -23,14 +23,20 @@ export default function Navigation() {
             showOnRoutes: ["*"]
         },
         {
-            name: "All users",
+            name: "All Users",
             url: "/user",
             isEnabled: true,
             showOnRoutes: ["*"]
         },
         {
-            name: "Search user",
+            name: "Search User",
             url: "/user/search",
+            isEnabled: true,
+            showOnRoutes: ["*"]
+        },
+        {
+            name: "About",
+            url: "/about",
             isEnabled: true,
             showOnRoutes: ["*"]
         }

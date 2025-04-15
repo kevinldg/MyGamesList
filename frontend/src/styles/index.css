@@ -1,4 +1,7 @@
+@import "./styles.css";
+
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
     --color-mgl-dark-900: #121212;
@@ -18,6 +21,7 @@
 
     --color-mgl-green-500: #2DB039;
     --color-mgl-yellow-500: #F9D457;
+    --color-mgl-red-400: #E61919;
     --color-mgl-red-500: #A12F31;
     --color-mgl-cyan-500: #5A9F9F;
 }

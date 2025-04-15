@@ -50,7 +50,7 @@ export default function AddGamePage() {
                     }}
                     className="border-white border px-2 rounded"
                 />
-                <button type="submit" className="px-1 py-0.5 rounded bg-blue-500">Suchen</button>
+                <button type="submit" className="px-1 py-0.5 rounded bg-blue-500 hover:bg-blue-600 hover:cursor-pointer">Suchen</button>
             </form>
             {foundGame && (
                 <div className="p-4 bg-mgl-dark-700 flex flex-col gap-4">
@@ -77,7 +77,7 @@ export default function AddGamePage() {
                                 );
                             })}
                         </select>
-                        <button type="submit" className="px-1 py-0.5 rounded text-sm bg-blue-500">Add</button>
+                        <button type="submit" className="px-1 py-0.5 rounded text-sm bg-blue-500 hover:bg-blue-600 hover:cursor-pointer">Add</button>
                     </form>
                 </div>
             )}

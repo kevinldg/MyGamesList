@@ -17,12 +17,12 @@ export default function GameEntry({game, deleteGame, updateGame, favorGame, dont
                     {
                         (updateGame || deleteGame || favorGame) && (
                             <div className="flex items-center gap-2">
-                                {favorGame && <button onClick={() => favorGame(game)} className="px-1 rounded-xs bg-yellow-500"><FontAwesomeIcon icon={faStar} className="text-sm" /></button>}
-                                {deleteGame && <button onClick={() => deleteGame(game.gameName)} className="px-1 rounded-xs bg-red-500"><FontAwesomeIcon icon={faTrash} className="text-sm" /></button>}
+                                {favorGame && <button onClick={() => favorGame(game)} className="px-1 rounded-xs bg-yellow-500 hover:bg-yellow-600 hover:cursor-pointer"><FontAwesomeIcon icon={faStar} className="text-sm" /></button>}
+                                {deleteGame && <button onClick={() => deleteGame(game.gameName)} className="px-1 rounded-xs bg-red-500 hover:bg-red-600 hover:cursor-pointer"><FontAwesomeIcon icon={faTrash} className="text-sm" /></button>}
                                 {updateGame && <button onClick={() => {
                                     const stateSelection = document.getElementById(game.gameName + "-state-select");
                                     if (stateSelection) stateSelection.classList.toggle("hidden");
-                                }} className="px-1 rounded-xs bg-green-600"><FontAwesomeIcon icon={faPen} className="text-sm" /></button>}
+                                }} className="px-1 rounded-xs bg-green-600 hover:bg-green-700 hover:cursor-pointer"><FontAwesomeIcon icon={faPen} className="text-sm" /></button>}
                             </div>
                         )
                     }
@@ -33,7 +33,7 @@ export default function GameEntry({game, deleteGame, updateGame, favorGame, dont
                         <div id={game.gameName + "-state-select"} className="hidden pt-1 flex items-center gap-2">
                             <p>Select new state:</p>
                             {Object.values(GameState).map(state => {
-                                return (<GameStateBadge key={state} updateGame={updateGame} game={game} gameState={state} />);
+                                return (<GameStateBadge key={state} updateGame={updateGame} game={game} gameState={state} showCursorPointer={true} />);
                             })}
                         </div>
                     )
