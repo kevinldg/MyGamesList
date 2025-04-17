@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    image: kevinldg/mygameslist:latest
+    container_name: mygameslist
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/mygameslist
+      - JWT_SECRET=${JWT_SECRET}
+      - IGDB_CLIENT_ID=${IGDB_CLIENT_ID}
+      - IGDB_BEARER_TOKEN=${IGDB_BEARER_TOKEN}
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:

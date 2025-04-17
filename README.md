@@ -49,11 +49,42 @@ This app was a capstone project, part of the course nf-java-onl-de-27015 🦀 fr
 
 ## Setup with Docker
 
-For running the application, you need a MongoDB database and a Client ID + Bearer token from IGDB. Take a look at the [IGDB API docs](https://api-docs.igdb.com/#account-creation) to get them.
+For running the application, you need a MongoDB database and a Client ID + Bearer token from IGDB. Take a look at the [IGDB API docs](https://api-docs.igdb.com/#account-creation) to get them. Don't forget that you also need a JWT secret.
 
 Via `docker run` command:
 
 `docker run -d --name my-games-list -p 8080:8080 -e MONGODB_URI=<MONGODB_URI> -e JWT_SECRET=<JWT_SECRET> -e IGDB_CLIENT_ID=<IGDB_CLIENT_ID> -e IGDB_BEARER_TOKEN=<IGDB_BEARER_TOKEN> kevinldg/mygameslist:latest`
+
+Via `docker compose`:
+
+There is already a docker-compose.yml and .env.example in the root directory.
+
+```
+version: '3.8'
+
+services:
+  app:
+    image: kevinldg/mygameslist:latest
+    container_name: mygameslist
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/mygameslist
+      - JWT_SECRET=${JWT_SECRET}
+      - IGDB_CLIENT_ID=${IGDB_CLIENT_ID}
+      - IGDB_BEARER_TOKEN=${IGDB_BEARER_TOKEN}
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:
+```
 
 ---
 
